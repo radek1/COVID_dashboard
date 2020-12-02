@@ -4,7 +4,7 @@ library(zoo) #for rolling average
 
 start_date <- "2020-07-31"
 x.3 <- covid19(c("US"), level = 3, start = start_date) #countries where we need level 3 data
-x.1 <- covid19(c("Czech Republic", "Switzerland"), level = 1, start = start_date) #countries where we need level 1 data
+x.1 <- covid19(c("Czech Republic"), level = 1, start = start_date) #countries where we need level 1 data
 x.2 <- covid19(c("United Kingdom", "India"), level = 2, start = start_date) %>% filter(administrative_area_level_2 %in% c("Scotland", "Telagana", "California")) #countries where we need level 2 data
 
 
@@ -35,9 +35,14 @@ x.combined <- x.combined %>%
   group_by(region) %>% 
   mutate(average.7 = zoo::rollmean(daily_rate, k = 7, fill = NA))
 
+update.date <- max(x.combined$date)
+
 ggplot(x.combined, aes(date, daily_rate, color = region)) +
     geom_line(alpha = 0.5) +
     geom_line(aes(date, average.7, color = region), size = 1) +
     ylab("daily cases per 100,000") +
     ggtitle("7-day rollling average of COVID-19 cases in selected regions") +
+    labs(caption = " data source: Guidotti, E., Ardia, D., (2020), \"COVID-19 Data Hub\", Journal of Open Source
+  Software 5(51):2376, doi: 10.21105/joss.02376.",
+         subtitle = paste("updated", update.date)) +
     theme_bw()
